@@ -1,0 +1,14 @@
+{
+  "ID": "CF3C52EDC4314C059896FC403D6AFCDC",
+  "ActionKeyword": "ai",
+  "IsGlobal": false,
+  "Name": "ChatOpenAI",
+  "Author": "Bennett-Yang",
+  "Version": "0.0.1",
+  "Language": "csharp",
+  "Website": "https://github.com/Bennett-Yang/PowerToysRun-ChatOpenAI",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.ChatOpenAI.dll",
+  "IcoPathDark": "Images\\chatopenai.dark.png",
+  "IcoPathLight": "Images\\chatopenai.light.png",
+  "DynamicLoading": false
+}
