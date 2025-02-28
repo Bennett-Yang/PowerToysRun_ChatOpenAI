@@ -48,7 +48,7 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI.UnitTests
         [TestMethod]
         public void Query_OpenAI_API_should_return_results()
         {
-            // 调用设置接口，设置OpenAI的BaseURL和API Key
+            // 璋冪敤璁剧疆鎺ュ彛锛岃缃甇penAI鐨凚aseURL鍜孉PI Key
             main.UpdateSettings(new()
             {
                 AdditionalOptions = [

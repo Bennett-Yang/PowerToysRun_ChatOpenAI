@@ -75,7 +75,7 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
 
         private HttpClient _httpClient = new HttpClient();
 
-        // ·¢ËÍÓÃ»§ÊäÈëµÄ×Ö·û´®¸øOpenAI£¬·µ»ØAIµÄ»Ø¸´
+        // å‘é€ç”¨æˆ·è¾“å…¥çš„å­—ç¬¦ä¸²ç»™OpenAIï¼Œè¿”å›AIçš„å›å¤
         private async Task<string> SendToOpenAI(string userInput)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, $"{OpenAIBaseURL}/chat/completions")
@@ -126,9 +126,9 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
             return aiResponse;
         }
 
-        // iPlugin: Queryº¯ÊıÎªÖ÷Âß¼­£¬
-        // ¸ù¾İÓÃ»§ÊäÈëµÄQuery¶ÔÏó£¨ÆäÖĞSearch³ÉÔ±¼´ÓÃ»§ÊäÈëµÄ×Ö·û´®£©½øĞĞ´¦Àí²¢·µ»Ø½á¹û,
-        // ½á¹û°üº¬±êÌâ¡¢¸±±êÌâ¡¢Í¼±ê¡¢ActionµÈĞÅÏ¢
+        // iPlugin: Queryå‡½æ•°ä¸ºä¸»é€»è¾‘ï¼Œ
+        // æ ¹æ®ç”¨æˆ·è¾“å…¥çš„Queryå¯¹è±¡ï¼ˆå…¶ä¸­Searchæˆå‘˜å³ç”¨æˆ·è¾“å…¥çš„å­—ç¬¦ä¸²ï¼‰è¿›è¡Œå¤„ç†å¹¶è¿”å›ç»“æœ,
+        // ç»“æœåŒ…å«æ ‡é¢˜ã€å‰¯æ ‡é¢˜ã€å›¾æ ‡ã€Actionç­‰ä¿¡æ¯
         public List<Result> Query(Query query) => Query(query, false);
         public List<Result> Query(Query query, bool delayedExecution)
         {
@@ -158,7 +158,7 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
             ];
         }
 
-        // iPlugin: ²å¼ş³õÊ¼»¯º¯Êı£¬ÕâÀï½ö×¢²áÁËÖ÷Ìâ±ä¸üÊÂ¼ş£¨¸úËæÏµÍ³Ö÷Ìâlight»¹ÊÇdark¸ü»»Í¼±ê£©
+        // iPlugin: æ’ä»¶åˆå§‹åŒ–å‡½æ•°ï¼Œè¿™é‡Œä»…æ³¨å†Œäº†ä¸»é¢˜å˜æ›´äº‹ä»¶ï¼ˆè·Ÿéšç³»ç»Ÿä¸»é¢˜lightè¿˜æ˜¯darkæ›´æ¢å›¾æ ‡ï¼‰
         public void Init(PluginInitContext context)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
@@ -166,11 +166,11 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
             UpdateIconPath(Context.API.GetCurrentTheme());
         }
 
-        // ISettingProvider: ´´½¨ÉèÖÃÃæ°å£¬Ò»°ã²»ĞèÒª£¬Ö±½Ó·µ»ØÎ´ÊµÏÖ
+        // ISettingProvider: åˆ›å»ºè®¾ç½®é¢æ¿ï¼Œä¸€èˆ¬ä¸éœ€è¦ï¼Œç›´æ¥è¿”å›æœªå®ç°
         public Control CreateSettingPanel() => throw new NotImplementedException();
 
-        // ISettingProvider: ¸üĞÂÉèÖÃ
-        // ´ÓAdditionalOptions²éÕÒ¶ÔÓ¦µÄÉèÖÃ£¬Èç¹ûÕÒµ½ÁËÔòÅĞ¶ÏÆäÖµÊÇ·ñÎªnull£¬Èç¹û²»ÊÇnull¾Í·µ»ØÖµ£¬ÕÒ²»µ½¾Í·µ»Øfalse
+        // ISettingProvider: æ›´æ–°è®¾ç½®
+        // ä»AdditionalOptionsæŸ¥æ‰¾å¯¹åº”çš„è®¾ç½®ï¼Œå¦‚æœæ‰¾åˆ°äº†åˆ™åˆ¤æ–­å…¶å€¼æ˜¯å¦ä¸ºnullï¼Œå¦‚æœä¸æ˜¯nullå°±è¿”å›å€¼ï¼Œæ‰¾ä¸åˆ°å°±è¿”å›false
         public void UpdateSettings(PowerLauncherPluginSettings settings)
         {
             OpenAIBaseURL = settings.AdditionalOptions.FirstOrDefault(x => x.Key == nameof(OpenAIBaseURL))?.TextValue ?? "null";
