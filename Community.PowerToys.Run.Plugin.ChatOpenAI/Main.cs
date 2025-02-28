@@ -25,6 +25,7 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
 
         private string OpenAIBaseURL { get; set; }
         private string OpenAIAPIKey { get; set; }
+        private string ModelName { get; set; }
         private bool isEndCharacterEnabled { get; set; }
         private string EndCharacter { get; set; }
 
@@ -55,6 +56,14 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
             },
             new()
             {
+                Key = nameof(ModelName),
+                DisplayLabel = "Model Name",
+                DisplayDescription = "Model name that you get from your API provider.",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = ModelName,
+            },
+            new()
+            {
                 Key = nameof(EndCharacter),
                 DisplayLabel = "End character",
                 DisplayDescription = "End character. Only answer you after you type the end character. Period by Default.",
@@ -77,10 +86,27 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
                 },
                 Content = new StringContent(JsonSerializer.Serialize(new
                 {
-                    model = "Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+                    model = ModelName,
                     messages = new[]
                     {
-                        new { role = "user", content = userInput }
+                        new
+                        {
+                            role = "system",
+                            content = "You are my personal assistant who can answer my questions in the most brief way." +
+                            "You should give me the answer directly without any other " +
+                            "information in the language I am using to ask you. Do not" +
+                            "use any kinds of markup syntax and just give me the plain text."
+                        },
+                        new 
+                        { 
+                            role = "user", 
+                            content = userInput 
+                        }
+                    },
+                    temperature = 0.9,
+                    response_format = new
+                    {
+                        type = "text"
                     }
                 }), System.Text.Encoding.UTF8, "application/json")
             };
@@ -149,6 +175,7 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
         {
             OpenAIBaseURL = settings.AdditionalOptions.FirstOrDefault(x => x.Key == nameof(OpenAIBaseURL))?.TextValue ?? "null";
             OpenAIAPIKey = settings.AdditionalOptions.FirstOrDefault(x => x.Key == nameof(OpenAIAPIKey))?.TextValue ?? "null";
+            ModelName = settings.AdditionalOptions.FirstOrDefault(x => x.Key == nameof(ModelName))?.TextValue ?? "null";
             isEndCharacterEnabled = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(EndCharacter))?.Value ?? false;
             EndCharacter = settings.AdditionalOptions.FirstOrDefault(x => x.Key == nameof(EndCharacter))?.TextValue ?? ".";
         }

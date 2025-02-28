@@ -23,23 +23,26 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI.UnitTests
             var options = main.AdditionalOptions;
             Assert.AreEqual("OpenAIBaseURL", options.ElementAt(0).Key);
             Assert.AreEqual("OpenAIAPIKey", options.ElementAt(1).Key);
-            Assert.AreEqual("EndCharacter", options.ElementAt(2).Key);
+            Assert.AreEqual("ModelName", options.ElementAt(2).Key);
+            Assert.AreEqual("EndCharacter", options.ElementAt(3).Key);
         }
 
         [TestMethod]
         public void UpdateSettings_should_set_OpenAI_config()
         {
             main.UpdateSettings(new() { AdditionalOptions = [
-                    new() { Key = "OpenAIBaseURL", TextValue = "https://openai.com/v1" },
+                    new() { Key = "OpenAIBaseURL", TextValue = "https://api.siliconflow.cn/v1" },
                     new() { Key = "OpenAIAPIKey", TextValue = "sk-1234" },
+                    new() { Key= "ModelName", TextValue = "Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" },
                     new() { Key = "EndCharacter", TextValue = "#", Value = true }
                 ] });
 
             var options = main.AdditionalOptions;
-            Assert.AreEqual("https://openai.com/v1", options.ElementAt(0).TextValue);
-            Assert.AreEqual("sk-***", options.ElementAt(1).TextValue);
-            Assert.AreEqual(true, options.ElementAt(2).Value);
-            Assert.AreEqual("#", options.ElementAt(2).TextValue);
+            Assert.AreEqual("https://api.siliconflow.cn/v1", options.ElementAt(0).TextValue);
+            Assert.AreEqual("sk-1234", options.ElementAt(1).TextValue);
+            Assert.AreEqual("Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B", options.ElementAt(2).TextValue);
+            Assert.AreEqual(true, options.ElementAt(3).Value);
+            Assert.AreEqual("#", options.ElementAt(3).TextValue);
         }
 
         [TestMethod]
@@ -49,8 +52,9 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI.UnitTests
             main.UpdateSettings(new()
             {
                 AdditionalOptions = [
-                    new() { Key = "OpenAIBaseURL", TextValue = "https://openai.com/v1" },
-                    new() { Key = "OpenAIAPIKey", TextValue = "sk-****" },
+                    new() { Key = "OpenAIBaseURL", TextValue = "https://api.siliconflow.cn/v1" },
+                    new() { Key = "OpenAIAPIKey", TextValue = "sk-1234" },
+                    new() { Key= "ModelName", TextValue = "Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" },
                     new() { Key = "EndCharacter", TextValue = ".", Value = true }
                 ]
             });
