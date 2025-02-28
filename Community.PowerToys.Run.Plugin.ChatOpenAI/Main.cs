@@ -92,9 +92,9 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
                         new
                         {
                             role = "system",
-                            content = "You are my personal assistant who can answer my questions in the most brief way." +
+                            content = "You are my personal assistant who can answer my questions as concise as possible. " +
                             "You should give me the answer directly without any other " +
-                            "information in the language I am using to ask you. Do not" +
+                            "information in the language I am using to ask you. Do not " +
                             "use any kinds of markup syntax and just give me the plain text."
                         },
                         new 
