@@ -146,8 +146,8 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
 
             return [
                 new Result{
-                    Title = aiResponse,
-                    SubTitle = "Click to copy the answer",
+                    Title = "Click to copy the answer:",
+                    SubTitle = aiResponse,
                     IcoPath = IconPath,
                     Action = _ =>
                     {
