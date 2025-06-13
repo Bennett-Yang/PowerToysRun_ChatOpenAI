@@ -17,7 +17,7 @@ using System.Text.Json;
 
 namespace Community.PowerToys.Run.Plugin.ChatOpenAI
 {
-    public class Main : IPlugin, IDelayedExecutionPlugin, ISettingProvider, IDisposable
+    public class Main : IPlugin, IDelayedExecutionPlugin, ISettingProvider, IDisposable, IContextMenu
     {
         public string Name => "ChatOpenAI";
         public string Description => "Chat with your AI in PowerToys Run";
@@ -92,17 +92,17 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
                         new
                         {
                             role = "system",
-                            content = "You are my personal assistant who can answer my questions. " +
+                            content = "You are my personal assistant whose responsibility is to answer my questions. " +
                             "You should obey the following rules. " +
                             "1. You should answer me as succinctly as possible. " +
                             "2. You should give me the answer directly without any other additional information. " +
                             "3. You should answer my question in the language I am using to ask you. " +
                             "4. Do not use any kinds of markup syntax and just give me the plain text."
                         },
-                        new 
-                        { 
-                            role = "user", 
-                            content = userInput 
+                        new
+                        {
+                            role = "user",
+                            content = userInput
                         }
                     },
                     temperature = 0.9,
@@ -135,7 +135,7 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
         public List<Result> Query(Query query, bool delayedExecution)
         {
             ArgumentNullException.ThrowIfNull(query);
-            var isGlobalQuery = string.IsNullOrEmpty(query.ActionKeyword);
+            var isGlobalQuery = string.IsNullOrEmpty(query.ActionKeyword);  //不响应全局查询
             var isEmptySearch = string.IsNullOrEmpty(query.Search);
             var hasEndCharacter = query.Search.EndsWith(EndCharacter);
             if (isEmptySearch || isGlobalQuery || (isEndCharacterEnabled && !hasEndCharacter) || !delayedExecution)
@@ -144,18 +144,18 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
             }
 
             var userInput = query.Search.TrimEnd(EndCharacter[0]);
-            string aiResponse = Task.Run(() => SendToOpenAI(userInput)).Result;
-
+            string ai_answer = filter_ai_response(Task.Run(() => SendToOpenAI(userInput)).Result);
             return [
                 new Result{
-                    Title = "Click to copy the answer:",
-                    SubTitle = aiResponse,
+                    Title = "Click or press Enter to copy the answer:",
+                    SubTitle = ai_answer,
                     IcoPath = IconPath,
                     Action = _ =>
                     {
-                        Clipboard.SetText(aiResponse);
+                        Clipboard.SetText(ai_answer);
                         return true;
                     },
+                    ContextData = ai_answer
                 }
             ];
         }
@@ -206,5 +206,42 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI
         private void UpdateIconPath(Theme theme) => IconPath = theme == Theme.Light || theme == Theme.HighContrastWhite ? Context?.CurrentPluginMetadata.IcoPathLight : Context?.CurrentPluginMetadata.IcoPathDark;
 
         private void OnThemeChanged(Theme currentTheme, Theme newTheme) => UpdateIconPath(newTheme);
+
+        private string filter_ai_response(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return "Your request did not receive a response. Please check your network or API validity.";
+
+            // 使用正则表达式移除 <think> 标签及其内容
+            return System.Text.RegularExpressions.Regex.Replace(
+                input,
+                @"<think>.*?</think>",
+                string.Empty,
+                System.Text.RegularExpressions.RegexOptions.Singleline
+            ).Trim();
+        }
+
+        public List<ContextMenuResult> LoadContextMenus(Result selectedResult)
+        {
+            if (selectedResult?.ContextData is string aiResponse)
+            {
+                return [
+                    new ContextMenuResult
+                    {
+                        PluginName = Name,
+                        Title = "Copy (Enter)",
+                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                        Glyph = "\xE8C8", // Copy
+                        AcceleratorKey = Key.Enter,
+                        Action = _ =>
+                        {
+                            Clipboard.SetText(aiResponse);
+                            return true;
+                        },
+                    },
+                ];
+            }
+            return [];
+        }
     }
 }
