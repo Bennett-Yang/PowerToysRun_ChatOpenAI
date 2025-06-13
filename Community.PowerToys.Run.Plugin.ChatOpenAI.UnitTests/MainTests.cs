@@ -1,8 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
-using System.Runtime.InteropServices.JavaScript;
-using Wox.Plugin;
+
+
 
 namespace Community.PowerToys.Run.Plugin.ChatOpenAI.UnitTests
 {
@@ -16,6 +16,8 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI.UnitTests
         {
             main = new Main();
         }
+
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public void AdditionalOptions_should_return_option_for_openai_config()
@@ -33,14 +35,14 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI.UnitTests
             main.UpdateSettings(new() { AdditionalOptions = [
                     new() { Key = "OpenAIBaseURL", TextValue = "https://api.siliconflow.cn/v1" },
                     new() { Key = "OpenAIAPIKey", TextValue = "sk-1234" },
-                    new() { Key= "ModelName", TextValue = "Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" },
+                    new() { Key= "ModelName", TextValue = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B" },
                     new() { Key = "EndCharacter", TextValue = "#", Value = true }
                 ] });
 
             var options = main.AdditionalOptions;
             Assert.AreEqual("https://api.siliconflow.cn/v1", options.ElementAt(0).TextValue);
             Assert.AreEqual("sk-1234", options.ElementAt(1).TextValue);
-            Assert.AreEqual("Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B", options.ElementAt(2).TextValue);
+            Assert.AreEqual("deepseek-ai/DeepSeek-R1-0528-Qwen3-8B", options.ElementAt(2).TextValue);
             Assert.AreEqual(true, options.ElementAt(3).Value);
             Assert.AreEqual("#", options.ElementAt(3).TextValue);
         }
@@ -54,13 +56,39 @@ namespace Community.PowerToys.Run.Plugin.ChatOpenAI.UnitTests
                 AdditionalOptions = [
                     new() { Key = "OpenAIBaseURL", TextValue = "https://api.siliconflow.cn/v1" },
                     new() { Key = "OpenAIAPIKey", TextValue = "sk-1234" },
-                    new() { Key= "ModelName", TextValue = "Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B" },
-                    new() { Key = "EndCharacter", TextValue = ".", Value = true }
+                    new() { Key= "ModelName", TextValue = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B" },
+                    new() { Key = "EndCharacter", TextValue = "#", Value = true }
                 ]
             });
-            var results = main.Query(new("ai hello.", "ai"), true);
+            var results = main.Query(new("ai hello#", "ai"), true);
 
-            Assert.IsNotNull(results.First());
+            TestContext.WriteLine(results.First().SubTitle);
+            Assert.IsNotNull(results.First().SubTitle);
+        }
+
+        [TestMethod]
+        public void Results_from_reasoning_model_should_get_rid_of_think_tags()
+        {
+            main.UpdateSettings(new()
+            {
+                AdditionalOptions = [
+                    new() { Key = "OpenAIBaseURL", TextValue = "https://api.siliconflow.cn/v1" },
+                    new() { Key = "OpenAIAPIKey", TextValue = "sk-1234" },
+                    new() { Key= "ModelName", TextValue = "Pro/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B" },
+                    new() { Key = "EndCharacter", TextValue = "#", Value = true }
+                ]
+            });
+            var results = main.Query(new("ai what is low dimension embedding in machine learning?#", "ai"), true);
+            TestContext.WriteLine(results.First().SubTitle);
+            Assert.IsFalse(results.First().SubTitle.Contains("<think>", StringComparison.OrdinalIgnoreCase));
+        }
+
+        [TestMethod]
+        public void LoadContextMenus_should_return_button_for_copy_result()
+        {
+            var results = main.LoadContextMenus(new() { ContextData = "test ai response" });
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual("Copy (Enter)", results[0].Title);
         }
     }
 }
